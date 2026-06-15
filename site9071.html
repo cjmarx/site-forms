@@ -59,6 +59,7 @@
   .trade-carpentry  { background: #FEF3C7; }
   .trade-painting   { background: #FDF2F8; }
   .trade-plumbing   { background: #F0FDF4; }
+  .trade-tiling     { background: #F5F0FF; }
   .trade-icon  { font-size: 20px; }
   .trade-title { font-size: 14px; font-weight: 700; color: #1A202C; }
   .trade-count { font-size: 11px; color: #718096; margin-left: auto; }
@@ -429,6 +430,31 @@ const trades = [
           { id:"p85-fe",   name:"Final Ext",       share:9,  progress:0 },
           { id:"p85-tui",  name:"Touchup Int",     share:13, progress:0 },
           { id:"p85-tue",  name:"Touchup Ext",     share:11, progress:0 },
+        ]
+      }
+    ]
+  },
+  {
+    trade:"Tiling", icon:"🪟", cls:"trade-tiling",
+    subs:[
+      {
+        id:"tile-9084", name:"Tiling", siteNo:"9084",
+        totalValue:0, split:null,
+        tasks:[
+          { id:"t84-fl",  name:"Floor Tiling", share:60, progress:0 },
+          { id:"t84-wc",  name:"WC Walls",      share:20, progress:0 },
+          { id:"t84-st",  name:"Stoeps",         share:10, progress:0 },
+          { id:"t84-kw",  name:"Kitchen Walls",  share:10, progress:0 },
+        ]
+      },
+      {
+        id:"tile-9085", name:"Tiling", siteNo:"9085",
+        totalValue:5555, split:null,
+        tasks:[
+          { id:"t85-fl",  name:"Floor Tiling", share:60, progress:0 },
+          { id:"t85-wc",  name:"WC Walls",      share:20, progress:0 },
+          { id:"t85-st",  name:"Stoeps",         share:10, progress:0 },
+          { id:"t85-kw",  name:"Kitchen Walls",  share:10, progress:0 },
         ]
       }
     ]
