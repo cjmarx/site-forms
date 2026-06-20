@@ -332,39 +332,10 @@ const trades = [
     trade:"Carpentry", icon:"🪚", cls:"trade-carpentry",
     subs:[
       {
-        id:"carp-9083", name:"Carpenter", siteNo:"9083",
-        totalValue:30450, split:null,
-        tasks:[
-          { id:"c83-tru",  name:"Trusses",           share:16, progress:1    },
-          { id:"c83-rbr",  name:"Roof Brandering",   share:11, progress:1    },
-          { id:"c83-rti",  name:"Roof Tiles",         share:5,  progress:1    },
-          { id:"c83-rv",   name:"Ridge & Valley",     share:9,  progress:1    },
-          { id:"c83-fac",  name:"Facia",              share:4,  progress:1    },
-          { id:"c83-cbr",  name:"Ceiling Brandering", share:5,  progress:1    },
-          { id:"c83-cbo",  name:"Ceiling Boards",     share:12, progress:1    },
-          { id:"c83-cro",  name:"Cornice",            share:7,  progress:1    },
-          { id:"c83-exd",  name:"Ext Doors",          share:4,  progress:1    },
-          { id:"c83-ind",  name:"Int Doors",          share:6,  progress:1    },
-          { id:"c83-ski",  name:"Skirting",           share:11, progress:0    },
-          { id:"c83-fit",  name:"Fittings & Compl",   share:15, progress:0    },
-        ]
-      },
-      {
         id:"carp-9084", name:"Carpenter", siteNo:"9084",
         totalValue:19530, split:null,
         tasks:[
-          { id:"c84-tru",  name:"Trusses",           share:16, progress:1    },
-          { id:"c84-rbr",  name:"Roof Brandering",   share:11, progress:0.25 },
-          { id:"c84-rti",  name:"Roof Tiles",         share:5,  progress:0    },
-          { id:"c84-rv",   name:"Ridge & Valley",     share:9,  progress:0    },
-          { id:"c84-fac",  name:"Facia",              share:4,  progress:0    },
-          { id:"c84-cbr",  name:"Ceiling Brandering", share:5,  progress:0    },
-          { id:"c84-cbo",  name:"Ceiling Boards",     share:12, progress:0    },
-          { id:"c84-cro",  name:"Cornice",            share:7,  progress:0    },
-          { id:"c84-exd",  name:"Ext Doors",          share:4,  progress:0    },
-          { id:"c84-ind",  name:"Int Doors",          share:6,  progress:0    },
-          { id:"c84-ski",  name:"Skirting",           share:11, progress:0    },
-          { id:"c84-fit",  name:"Fittings & Compl",   share:15, progress:0    },
+          { id:"c84-fit",  name:"Fittings & Compl",   share:15, progress:0.75 },
         ]
       },
       {
@@ -391,31 +362,11 @@ const trades = [
     trade:"Painting", icon:"🎨", cls:"trade-painting",
     subs:[
       {
-        id:"paint-9083", name:"Paint", siteNo:"9083",
-        totalValue:15300, split:null,
-        tasks:[
-          { id:"p83-uci",  name:"Undercoat Int",  share:20, progress:1   },
-          { id:"p83-uce",  name:"Undercoat Ext",  share:10, progress:1   },
-          { id:"p83-ci",   name:"Color Int",       share:13, progress:1   },
-          { id:"p83-ce",   name:"Color Ext",       share:7,  progress:1   },
-          { id:"p83-fi",   name:"Final Int",       share:17, progress:0.5 },
-          { id:"p83-fe",   name:"Final Ext",       share:9,  progress:1   },
-          { id:"p83-tui",  name:"Touchup Int",     share:13, progress:0   },
-          { id:"p83-tue",  name:"Touchup Ext",     share:11, progress:0   },
-        ]
-      },
-      {
         id:"paint-9084", name:"Paint", siteNo:"9084",
         totalValue:9690, split:null,
         tasks:[
-          { id:"p84-uci",  name:"Undercoat Int",  share:20, progress:1 },
-          { id:"p84-uce",  name:"Undercoat Ext",  share:10, progress:1 },
-          { id:"p84-ci",   name:"Color Int",       share:13, progress:0 },
-          { id:"p84-ce",   name:"Color Ext",       share:7,  progress:0 },
-          { id:"p84-fi",   name:"Final Int",       share:17, progress:0 },
-          { id:"p84-fe",   name:"Final Ext",       share:9,  progress:0 },
+          { id:"p84-fi",   name:"Final Int",       share:17, progress:0.75 },
           { id:"p84-tui",  name:"Touchup Int",     share:13, progress:0 },
-          { id:"p84-tue",  name:"Touchup Ext",     share:11, progress:0 },
         ]
       },
       {
@@ -438,16 +389,6 @@ const trades = [
     trade:"Tiling", icon:"🪟", cls:"trade-tiling",
     subs:[
       {
-        id:"tile-9084", name:"Tiling", siteNo:"9084",
-        totalValue:0, split:null,
-        tasks:[
-          { id:"t84-fl",  name:"Floor Tiling", share:60, progress:0 },
-          { id:"t84-wc",  name:"WC Walls",      share:20, progress:0 },
-          { id:"t84-st",  name:"Stoeps",         share:10, progress:0 },
-          { id:"t84-kw",  name:"Kitchen Walls",  share:10, progress:0 },
-        ]
-      },
-      {
         id:"tile-9085", name:"Tiling", siteNo:"9085",
         totalValue:5555, split:null,
         tasks:[
@@ -463,35 +404,10 @@ const trades = [
     trade:"Plumbing", icon:"🔧", cls:"trade-plumbing",
     subs:[
       {
-        id:"plumb-9083", name:"Plumbing", siteNo:"9083",
-        totalValue:0, split:null,
-        tasks:[
-          { id:"pb83-ct",  name:"Chase & Tube",  share:16, progress:1   },
-          { id:"pb83-sw",  name:"Sewer",          share:24, progress:1   },
-          { id:"pb83-san", name:"Sanware",         share:20, progress:1   },
-          { id:"pb83-con", name:"Connected",       share:10, progress:1   },
-          { id:"pb83-fit", name:"Fittings",        share:15, progress:0.5 },
-          { id:"pb83-com", name:"Completion",      share:15, progress:0   },
-        ]
-      },
-      {
-        id:"plumb-9084", name:"Plumbing", siteNo:"9084",
-        totalValue:0, split:null,
-        tasks:[
-          { id:"pb84-ct",  name:"Chase & Tube",  share:16, progress:1    },
-          { id:"pb84-sw",  name:"Sewer",          share:24, progress:0.5  },
-          { id:"pb84-san", name:"Sanware",         share:20, progress:0    },
-          { id:"pb84-con", name:"Connected",       share:10, progress:0.25 },
-          { id:"pb84-fit", name:"Fittings",        share:15, progress:0    },
-          { id:"pb84-com", name:"Completion",      share:15, progress:0    },
-        ]
-      },
-      {
         id:"plumb-9085", name:"Plumbing", siteNo:"9085",
         totalValue:0, split:null,
         tasks:[
-          { id:"pb85-ct",  name:"Chase & Tube",  share:16, progress:0 },
-          { id:"pb85-sw",  name:"Sewer",          share:24, progress:0 },
+          { id:"pb85-sw",  name:"Sewer",          share:24, progress:0.25 },
           { id:"pb85-san", name:"Sanware",         share:20, progress:0 },
           { id:"pb85-con", name:"Connected",       share:10, progress:0 },
           { id:"pb85-fit", name:"Fittings",        share:15, progress:0 },
