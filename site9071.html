@@ -298,6 +298,33 @@ async function loadWorkers() {
   }
 }
 
+/* ── LOAD SUB LABOUR WORKERS FROM GOOGLE SHEET ──
+   Fetches the SUB LABOUR WORKERS tab, building subLabourGroups
+   dynamically. IDs are generated from position so they are stable
+   within a session. Name changes in MASTER WORKERS flow through
+   automatically since the server resolves canonical names.
+*/
+async function loadSubLabourWorkers() {
+  try {
+    const url  = SCRIPT_URL + "?type=sublabourworkers";
+    const resp = await fetch(url);
+    const data = await resp.json();
+    if (data.status === "success" && data.groups.length > 0) {
+      subLabourGroups.length = 0;
+      let idCounter = 1;
+      data.groups.forEach(group => {
+        const workers = group.workers.map(w => ({
+          id  : "sl" + (idCounter++),
+          name: w.name
+        }));
+        subLabourGroups.push({ chargedTo: group.chargedTo, workers });
+      });
+    }
+  } catch(err) {
+    console.log("Could not load sub labour workers:", err);
+  }
+}
+
 /* ── LOAD SUBCONTRACTOR TASKS FROM GOOGLE SHEET ──
    Server already excludes tasks at 100% complete.
    trades array is rebuilt fresh every time the form opens.
@@ -429,17 +456,44 @@ function maxAllowed(usedElsewhere) {
   return 1.0 - usedElsewhere;
 }
 
-function updateSubLabourButtons(wid) {
-  // Find this worker in sub labour groups and update their buttons
-  const attVal = codeValue(attendanceSel[wid]);
-  const remaining = 1.0 - attVal;
+// ── Helper: get all sl IDs for a given worker name ──────────────
+// A worker may appear in multiple sub labour groups (e.g. Thabo-Simon
+// under both Plastering and Carpentry), so this returns ALL matching IDs.
+function getSlIdsForWorkerName(nameUC) {
+  const ids = [];
   subLabourGroups.forEach(group => {
     group.workers.forEach(w => {
-      if (parseInt(w.id.replace("sl","")) && w.name.toUpperCase() === (workers.find(x=>x.id===wid)||{name:""}).name.toUpperCase()) {
-        updateSlButtons(w.id, remaining);
+      if (w.name.toUpperCase() === nameUC) ids.push(w.id);
+    });
+  });
+  return ids;
+}
+
+// ── Helper: total day-value committed across ALL sub labour groups ──
+// Must sum across every group in case a worker appears in multiple groups.
+function totalSlValue(nameUC) {
+  let total = 0;
+  subLabourGroups.forEach(group => {
+    group.workers.forEach(w => {
+      if (w.name.toUpperCase() === nameUC && subLabourSel[w.id]) {
+        total += codeValue(subLabourSel[w.id].code);
       }
     });
   });
+  return total;
+}
+
+function updateSubLabourButtons(wid) {
+  // Find this worker in sub labour groups and update their buttons
+  const attVal  = codeValue(attendanceSel[wid]);
+  const attWorker = workers.find(x => x.id === wid);
+  if (!attWorker) return;
+  const nameUC  = attWorker.name.toUpperCase();
+  // Must subtract any EXISTING sl selections from remaining, so that updating
+  // one group's buttons accounts for what is already booked in another group
+  const slAlready = totalSlValue(nameUC);
+  const remaining = Math.max(0, 1.0 - attVal - slAlready);
+  getSlIdsForWorkerName(nameUC).forEach(slId => updateSlButtons(slId, remaining));
 }
 
 function updateAttButtons(wid, remaining) {
@@ -509,28 +563,27 @@ function selectCode(wid, code, btn) {
     btn.classList.add("selected"); attendanceSel[wid]=code; card.classList.add("has-code");
     const st=document.getElementById("status-"+wid); st.textContent="✓ "+code+" recorded"; st.className="worker-status active";
   }
-  // Update sub labour buttons for this worker
-  const attVal    = codeValue(attendanceSel[wid]);
-  const remaining = 1.0 - attVal;
-  // Find matching sub labour workers
-  subLabourGroups.forEach(group => {
-    group.workers.forEach(w => {
-      const attWorker = workers.find(x => x.id === wid);
-      if (attWorker && w.name.toUpperCase() === attWorker.name.toUpperCase()) {
-        updateSlButtons(w.id, remaining);
-        // If remaining is 0 clear any existing sl selection
-        if (remaining <= 0 && subLabourSel[w.id]) {
-          delete subLabourSel[w.id];
-          const slCard = document.getElementById("slcard-"+w.id);
-          if (slCard) {
-            slCard.classList.remove("has-code");
-            const st = document.getElementById("slstatus-"+w.id);
-            if (st) { st.textContent="No code — not charged today"; st.className="worker-status"; }
-          }
+  // Update sub labour buttons for this worker — handles multiple groups
+  const attWorkerRef = workers.find(x => x.id === wid);
+  if (attWorkerRef) {
+    const nameUC    = attWorkerRef.name.toUpperCase();
+    const attVal    = codeValue(attendanceSel[wid]);
+    const slAlready = totalSlValue(nameUC);
+    const remaining = Math.max(0, 1.0 - attVal - slAlready);
+    getSlIdsForWorkerName(nameUC).forEach(slId => {
+      updateSlButtons(slId, remaining);
+      // If no room left, clear any existing sl selection for this slot
+      if (remaining <= 0 && subLabourSel[slId]) {
+        delete subLabourSel[slId];
+        const slCard = document.getElementById("slcard-"+slId);
+        if (slCard) {
+          slCard.classList.remove("has-code");
+          const st = document.getElementById("slstatus-"+slId);
+          if (st) { st.textContent="No code — not charged today"; st.className="worker-status"; }
         }
       }
     });
-  });
+  }
   updateProgress();
 }
 
@@ -786,33 +839,12 @@ function retrySubmit() {
 }
 
 
-/* ── SUB LABOUR DATA ── */
-const subLabourGroups = [
-  {
-    chargedTo: "Plastering",
-    workers: [
-      { id:"sl1", name:"Thabo-Simon"    },
-      { id:"sl2", name:"Lungisa"        },
-      { id:"sl3", name:"Thando-Lung"   },
-    ]
-  },
-  {
-    chargedTo: "Carpentry",
-    workers: [
-      { id:"sl4", name:"Agcobile-Lutho"  },
-      { id:"sl5", name:"Arkona-Lungisa"  },
-      { id:"sl6", name:"Lehasa-Maisa"    },
-      { id:"sl8", name:"Thabo-Simon"     },
-      { id:"sl9", name:"Takadimane"      },
-    ]
-  },
-  {
-    chargedTo: "Painting",
-    workers: [
-      { id:"sl7", name:"FRANK" },
-    ]
-  }
-];
+/* ── SUB LABOUR DATA — loaded dynamically from Google Sheet ──
+   Fetched via loadSubLabourWorkers() on page load from the
+   SUB LABOUR WORKERS tab. Changing names or trades there is
+   all that is ever needed — no GitHub upload required.
+*/
+let subLabourGroups = [];
 
 const subLabourSel = {};
 
@@ -876,16 +908,23 @@ function selectSubLabour(wid, code, chargedTo, btn) {
     st.textContent = "✓ "+code+" — charged to "+chargedTo;
     st.className   = "worker-status active";
   }
-  // Update attendance buttons for matching worker
-  const slVal     = codeValue(subLabourSel[wid] ? subLabourSel[wid].code : null);
-  const remaining = 1.0 - slVal;
-  const group     = subLabourGroups.find(g => g.workers.find(w => w.id === wid));
-  const slWorker  = group ? group.workers.find(w => w.id === wid) : null;
+  // Update attendance buttons for matching worker — handles multiple sl groups
+  const group    = subLabourGroups.find(g => g.workers.find(w => w.id === wid));
+  const slWorker = group ? group.workers.find(w => w.id === wid) : null;
   if (slWorker) {
-    const attWorker = workers.find(w => w.name.toUpperCase() === slWorker.name.toUpperCase());
+    const nameUC    = slWorker.name.toUpperCase();
+    const attWorker = workers.find(w => w.name.toUpperCase() === nameUC);
     if (attWorker) {
+      // Total committed = attendance + ALL sub labour groups for this person
+      const attVal    = codeValue(attendanceSel[attWorker.id]);
+      const slTotal   = totalSlValue(nameUC);
+      const remaining = Math.max(0, 1.0 - attVal - slTotal);
       updateAttButtons(attWorker.id, remaining);
-      // If remaining is 0 clear any existing attendance selection
+      // Also update buttons in all OTHER sl groups for this same worker
+      getSlIdsForWorkerName(nameUC).forEach(otherId => {
+        if (otherId !== wid) updateSlButtons(otherId, Math.max(0, 1.0 - attVal - slTotal));
+      });
+      // If no room left, clear attendance selection
       if (remaining <= 0 && attendanceSel[attWorker.id]) {
         delete attendanceSel[attWorker.id];
         const attCard = document.getElementById("card-"+attWorker.id);
@@ -932,7 +971,7 @@ function buildConfirmSubLabour() {
 /* ── INIT ── */
 setDate();
 if (true || !checkLock()) {
-  Promise.all([loadWorkers(), loadSubTasks()]).then(() => {
+  Promise.all([loadWorkers(), loadSubTasks(), loadSubLabourWorkers()]).then(() => {
     initProgress();
     buildWorkers();
     buildSubs();
