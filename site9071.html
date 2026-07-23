@@ -607,7 +607,7 @@ function buildSubs() {
       const badgeCls = sub.split ? "badge-split" : "badge-single";
       const badgeTxt = sub.split
         ? `Split: ${sub.split.pA} / ${sub.split.pB}`
-        : sub.totalValue > 0 ? `R${sub.totalValue.toLocaleString()}` : "Progress only";
+        : "Single";
 
       let tasksHtml = "";
       sub.tasks.forEach(task => {
@@ -635,13 +635,10 @@ function buildSubs() {
       });
 
       const totalPct = calcSubTotalPct(sub);
-      const metaTxt  = sub.totalValue > 0
-        ? `R${sub.totalValue.toLocaleString()} contract`
-        : "Progress tracking only";
 
       card.innerHTML = `
         <div class="sub-header">
-          <div><div class="sub-name">${sub.name} — Site ${sub.siteNo}</div><div class="sub-meta">${metaTxt}</div></div>
+          <div><div class="sub-name">${sub.name} — Site ${sub.siteNo}</div></div>
           <span class="sub-badge ${badgeCls}">${badgeTxt}</span>
         </div>
         ${tasksHtml}
